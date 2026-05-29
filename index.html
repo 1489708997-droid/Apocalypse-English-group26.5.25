@@ -111,12 +111,29 @@
             letter-spacing: 0.5px;
         }
 
+        /* 增加了小喇叭图标的排版样式 */
+        .word-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
         .word {
             font-size: 38px;
             font-weight: 700;
             letter-spacing: -0.5px;
             word-break: break-word;
             padding: 0 10px;
+        }
+
+        .audio-icon {
+            font-size: 20px;
+            color: var(--accent-color);
+            opacity: 0.8;
+            background: rgba(56, 189, 248, 0.1);
+            padding: 6px 14px;
+            border-radius: 12px;
         }
 
         .hint {
@@ -197,8 +214,11 @@
             <!-- 卡片正面 -->
             <div class="card-face card-front">
                 <div class="date-tag" id="date">--/--</div>
-                <div class="word" id="word">loading</div>
-                <div class="hint">点击卡片看释义</div>
+                <div class="word-wrapper" onclick="speakCurrentWord(event)">
+                    <div class="word" id="word">loading</div>
+                    <div class="audio-icon">🔊 点击发音</div>
+                </div>
+                <div class="hint">点击空白处看释义</div>
             </div>
             <!-- 卡片反面 -->
             <div class="card-face card-back">
@@ -215,9 +235,8 @@
     </div>
 
     <script>
-        // 50个核心单词完整数据库，无一遗漏！
+        // 50个核心单词数据库
         const wordList = [
-            // 5月25日 (10个)
             { date: "5月25日", word: "advantage", phonetic: "[ədˈvæntɪdʒ]", meaning: "优势" },
             { date: "5月25日", word: "abandon", phonetic: "[əˈbændən]", meaning: "抛弃" },
             { date: "5月25日", word: "achieve", phonetic: "[əˈtʃiːv]", meaning: "实现" },
@@ -228,8 +247,6 @@
             { date: "5月25日", word: "efficient", phonetic: "[eˈfɪʃnt]", meaning: "高效" },
             { date: "5月25日", word: "frequent", phonetic: "[ˈfriːkwənt]", meaning: "频繁" },
             { date: "5月25日", word: "volunteer", phonetic: "[ˌvɑːlənˈtɪr]", meaning: "志愿者" },
-            
-            // 5月26日 (10个)
             { date: "5月26日", word: "admit", phonetic: "[ədˈmɪt]", meaning: "承认" },
             { date: "5月26日", word: "afford", phonetic: "[əˈfɔːrd]", meaning: "买得起" },
             { date: "5月26日", word: "agreement", phonetic: "[əˈɡriːmənt]", meaning: "协议" },
@@ -240,8 +257,6 @@
             { date: "5月26日", word: "announce", phonetic: "[əˈnaʊns]", meaning: "宣布" },
             { date: "5月26日", word: "anxious", phonetic: "[ˈæŋkʃəs]", meaning: "焦虑" },
             { date: "5月26日", word: "apologize", phonetic: "[əˈpɑːlədʒaɪz]", meaning: "道歉" },
-
-            // 5月27日 (10个)
             { date: "5月27日", word: "sunshine", phonetic: "[ˈsʌnʃaɪn]", meaning: "阳光" },
             { date: "5月27日", word: "breeze", phonetic: "[briːz]", meaning: "微风" },
             { date: "5月27日", word: "dream", phonetic: "[driːm]", meaning: "梦想" },
@@ -252,8 +267,6 @@
             { date: "5月27日", word: "flower", phonetic: "[ˈflaʊər]", meaning: "花朵" },
             { date: "5月27日", word: "peace", phonetic: "[piːs]", meaning: "平静，和平" },
             { date: "5月27日", word: "cherish", phonetic: "[ˈtʃerɪʃ]", meaning: "珍惜" },
-
-            // 5月28日 (10个)
             { date: "5月28日", word: "challenge", phonetic: "[ˈtʃælɪndʒ]", meaning: "挑战" },
             { date: "5月28日", word: "conclude", phonetic: "[kənˈkluːd]", meaning: "推断" },
             { date: "5月28日", word: "decorate", phonetic: "[ˈdekəreɪt]", meaning: "装饰，布置" },
@@ -264,8 +277,6 @@
             { date: "5月28日", word: "inspire", phonetic: "[ɪnˈspaɪər]", meaning: "激励" },
             { date: "5月28日", word: "mysterious", phonetic: "[mɪˈstɪriəs]", meaning: "神秘的" },
             { date: "5月28日", word: "regulate", phonetic: "[ˈreɡjuleɪt]", meaning: "调节" },
-
-            // 5月29日 (10个)
             { date: "5月29日", word: "bargain", phonetic: "[ˈbɑːrɡən]", meaning: "讲价" },
             { date: "5月29日", word: "campaign", phonetic: "[kæmˈpeɪn]", meaning: "竞选" },
             { date: "5月29日", word: "declare", phonetic: "[dɪˈkler]", meaning: "声明" },
@@ -278,13 +289,29 @@
             { date: "5月29日", word: "occupy", phonetic: "[ˈɑːkjupaɪ]", meaning: "占据" }
         ];
 
-        // 随机乱序机制，打乱顺序背诵
         let shuffledList = [...wordList].sort(() => Math.random() - 0.5);
         let currentIndex = 0;
 
         const card = document.getElementById('card');
 
-        // 渲染核心逻辑
+        // 核心美音朗读引擎
+        function playAudio(text) {
+            // 先停止当前正在播放的声音，防止重叠
+            window.speechSynthesis.cancel();
+            
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US'; // 强制设定为标准美式英语
+            utterance.rate = 0.9;     // 语速微调为0.9倍速，听得更清晰、更舒服
+            window.speechSynthesis.speak(utterance);
+        }
+
+        // 点击正面单词触发单独重读
+        function speakCurrentWord(event) {
+            event.stopPropagation(); // 阻止翻牌事件
+            const currentData = shuffledList[currentIndex];
+            playAudio(currentData.word);
+        }
+
         function renderWord() {
             if (currentIndex >= shuffledList.length) {
                 shuffledList = [...wordList].sort(() => Math.random() - 0.5);
@@ -293,26 +320,24 @@
             }
 
             const data = shuffledList[currentIndex];
-            
-            // 切词前必须强制将卡片恢复到正面
             card.classList.remove('is-flipped');
 
-            // 延迟填入，保证切词动画和翻转动作完美平滑
             setTimeout(() => {
                 document.getElementById('progress').innerText = `PROGRESS: ${currentIndex + 1} / ${shuffledList.length}`;
                 document.getElementById('date').innerText = data.date;
                 document.getElementById('word').innerText = data.word;
                 document.getElementById('meaning').innerText = data.meaning;
                 document.getElementById('phonetic').innerText = data.phonetic;
+                
+                // 核心功能：一切换到新单词，自动朗读
+                playAudio(data.word);
             }, 150);
         }
 
-        // 控制卡片正反翻转
         function flipCard() {
             card.classList.toggle('is-flipped');
         }
 
-        // 点击下方按钮切词（拦截冒泡，防止点按钮时卡片乱翻）
         function nextWord(event) {
             event.stopPropagation();
             currentIndex++;
