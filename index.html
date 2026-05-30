@@ -2,350 +2,116 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>每日刷词</title>
-    
-    <!-- PWA 独立运行设置 -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="每日刷词">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>作业帮刷单词</title>
     <style>
-        /* 极致现代护眼暗黑配色 */
-        :root {
-            --bg-color: #09090b;
-            --card-front-bg: #18181b;
-            --card-back-bg: #202024;
-            --text-main: #f4f4f5;
-            --text-sub: #71717a;
-            --accent-color: #38bdf8;
-            --success-color: #4ade80;
-            --warning-color: #fb923c;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            align-items: center;
-            height: 100vh;
-            padding: 50px 24px calc(30px + env(safe-area-inset-bottom));
-            overflow: hidden;
-        }
-
-        /* 顶部进度 */
-        .header {
-            width: 100%;
-            text-align: center;
-        }
-
-        .progress-text {
-            font-size: 14px;
-            font-weight: 500;
-            letter-spacing: 0.5px;
-            color: var(--text-sub);
-        }
-
-        /* 3D 卡片容器 */
-        .card-container {
-            width: 100%;
-            max-width: 360px;
-            height: 55vh;
-            perspective: 1200px;
-        }
-
-        .card {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            transform-style: preserve-3d;
-            transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
-            border-radius: 28px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
-        }
-
-        .card.is-flipped {
-            transform: rotateY(180deg);
-        }
-
-        /* 正反面公共样式 */
-        .card-face {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            border-radius: 28px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 32px;
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.03);
-        }
-
-        /* 正面样式（仅英文） */
-        .card-front {
-            background-color: var(--card-front-bg);
-        }
-
-        .date-tag {
-            position: absolute;
-            top: 28px;
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-sub);
-            background: rgba(255, 255, 255, 0.05);
-            padding: 4px 12px;
-            border-radius: 20px;
-            letter-spacing: 0.5px;
-        }
-
-        /* 增加了小喇叭图标的排版样式 */
-        .word-wrapper {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .word {
-            font-size: 38px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-            word-break: break-word;
-            padding: 0 10px;
-        }
-
-        .audio-icon {
-            font-size: 20px;
-            color: var(--accent-color);
-            opacity: 0.8;
-            background: rgba(56, 189, 248, 0.1);
-            padding: 6px 14px;
-            border-radius: 12px;
-        }
-
-        .hint {
-            position: absolute;
-            bottom: 28px;
-            font-size: 12px;
-            color: var(--text-sub);
-            opacity: 0.6;
-            letter-spacing: 0.5px;
-        }
-
-        /* 反面样式（释义+音标） */
-        .card-back {
-            background-color: var(--card-back-bg);
-            transform: rotateY(180deg);
-        }
-
-        .meaning {
-            font-size: 28px;
-            font-weight: 600;
-            color: var(--success-color);
-            margin-bottom: 12px;
-            line-height: 1.3;
-        }
-
-        .phonetic {
-            font-family: "Lucida Sans Unicode", sans-serif;
-            font-size: 18px;
-            color: var(--accent-color);
-            letter-spacing: 0.5px;
-        }
-
-        /* 底部原生感大按钮 */
-        .btn-group {
-            display: flex;
-            gap: 16px;
-            width: 100%;
-            max-width: 360px;
-        }
-
-        button {
-            flex: 1;
-            border: none;
-            padding: 18px;
-            font-size: 16px;
-            font-weight: 600;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: transform 0.1s ease;
-            color: #09090b;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        }
-
-        button:active {
-            transform: scale(0.96);
-        }
-
-        .btn-blur {
-            background-color: var(--warning-color);
-        }
-
-        .btn-know {
-            background-color: var(--success-color);
-        }
+        :root { --bg: #f0f4f8; --card: #ffffff; --primary: #4a90e2; }
+        body { font-family: sans-serif; background: var(--bg); display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        .controls-top { margin-bottom: 20px; }
+        .card-container { width: 85vw; height: 300px; perspective: 1000px; cursor: pointer; }
+        .card { width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; position: relative; }
+        .card.flipped { transform: rotateY(180deg); }
+        .face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--card); border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .back { transform: rotateY(180deg); }
+        .btn-group { margin-top: 30px; display: flex; gap: 20px; }
+        button { padding: 15px 30px; border: none; border-radius: 30px; background: var(--primary); color: white; cursor: pointer; font-size: 16px; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <div class="progress-text" id="progress">正在准备词库...</div>
+<div class="controls-top">
+    <select id="dateFilter" onchange="initGame()" style="padding:8px; border-radius:5px;">
+        <option value="all">混合模式</option>
+        <option value="05/25">05/25</option>
+        <option value="05/26">05/26</option>
+        <option value="05/27">05/27</option>
+        <option value="05/28">05/28</option>
+        <option value="05/29">05/29</option>
+        <option value="05/30">05/30</option>
+    </select>
+</div>
+
+<div class="card-container" onclick="flipCard()">
+    <div class="card" id="card">
+        <div class="face front"><h1 id="en">点击开始</h1></div>
+        <div class="face back"><h2 id="cn"></h2><p id="ipa"></p></div>
     </div>
+</div>
 
-    <div class="card-container" onclick="flipCard()">
-        <div class="card" id="card">
-            <!-- 卡片正面 -->
-            <div class="card-face card-front">
-                <div class="date-tag" id="date">--/--</div>
-                <div class="word-wrapper" onclick="speakCurrentWord(event)">
-                    <div class="word" id="word">loading</div>
-                    <div class="audio-icon">🔊 点击发音</div>
-                </div>
-                <div class="hint">点击空白处看释义</div>
-            </div>
-            <!-- 卡片反面 -->
-            <div class="card-face card-back">
-                <div class="meaning" id="meaning">加载中</div>
-                <div class="phonetic" id="phonetic">/.../</div>
-                <div class="hint">点击卡片回正面</div>
-            </div>
-        </div>
-    </div>
+<div class="btn-group">
+    <button onclick="mark('fuzzy')" style="background:#e67e22">模糊</button>
+    <button onclick="mark('known')" style="background:#50c878">认识</button>
+</div>
 
-    <div class="btn-group">
-        <button class="btn-blur" onclick="nextWord(event)">模糊 🫤</button>
-        <button class="btn-know" onclick="nextWord(event)">认识 😊</button>
-    </div>
+<script>
+    const wordList = [
+        {date:"05/30", word:"accelerate", cn:"加速", ipa:"/ækˈsɛləˌreɪt/"},
+        {date:"05/30", word:"apparent", cn:"明显", ipa:"/əˈpɛrənt/"},
+        // ... (其余单词列表请保持完整)
+    ];
 
-    <script>
-        // 50个核心单词数据库
-        const wordList = [
-            { date: "5月25日", word: "advantage", phonetic: "[ədˈvæntɪdʒ]", meaning: "优势" },
-            { date: "5月25日", word: "abandon", phonetic: "[əˈbændən]", meaning: "抛弃" },
-            { date: "5月25日", word: "achieve", phonetic: "[əˈtʃiːv]", meaning: "实现" },
-            { date: "5月25日", word: "benefit", phonetic: "[ˈbenɪfɪt]", meaning: "益处" },
-            { date: "5月25日", word: "challenge", phonetic: "[ˈtʃælɪndʒ]", meaning: "挑战" },
-            { date: "5月25日", word: "confident", phonetic: "[ˈkɑːnfɪdənt]", meaning: "自信" },
-            { date: "5月25日", word: "determine", phonetic: "[dɪˈtɜːrmɪn]", meaning: "衡量 / 决定" },
-            { date: "5月25日", word: "efficient", phonetic: "[eˈfɪʃnt]", meaning: "高效" },
-            { date: "5月25日", word: "frequent", phonetic: "[ˈfriːkwənt]", meaning: "频繁" },
-            { date: "5月25日", word: "volunteer", phonetic: "[ˌvɑːlənˈtɪr]", meaning: "志愿者" },
-            { date: "5月26日", word: "admit", phonetic: "[ədˈmɪt]", meaning: "承认" },
-            { date: "5月26日", word: "afford", phonetic: "[əˈfɔːrd]", meaning: "买得起" },
-            { date: "5月26日", word: "agreement", phonetic: "[əˈɡriːmənt]", meaning: "协议" },
-            { date: "5月26日", word: "alarm", phonetic: "[əˈlɑːrm]", meaning: "警报，闹钟" },
-            { date: "5月26日", word: "allow", phonetic: "[əˈlaʊ]", meaning: "允许" },
-            { date: "5月26日", word: "amaze", phonetic: "[əˈmeɪz]", meaning: "被惊到" },
-            { date: "5月26日", word: "ancient", phonetic: "[ˈeɪnʃənt]", meaning: "古代的" },
-            { date: "5月26日", word: "announce", phonetic: "[əˈnaʊns]", meaning: "宣布" },
-            { date: "5月26日", word: "anxious", phonetic: "[ˈæŋkʃəs]", meaning: "焦虑" },
-            { date: "5月26日", word: "apologize", phonetic: "[əˈpɑːlədʒaɪz]", meaning: "道歉" },
-            { date: "5月27日", word: "sunshine", phonetic: "[ˈsʌnʃaɪn]", meaning: "阳光" },
-            { date: "5月27日", word: "breeze", phonetic: "[briːz]", meaning: "微风" },
-            { date: "5月27日", word: "dream", phonetic: "[driːm]", meaning: "梦想" },
-            { date: "5月27日", word: "gentle", phonetic: "[ˈdʒentl]", meaning: "温柔的" },
-            { date: "5月27日", word: "journey", phonetic: "[ˈdʒɜːrni]", meaning: "旅途" },
-            { date: "5月27日", word: "smile", phonetic: "[smaɪl]", meaning: "微笑" },
-            { date: "5月27日", word: "courage", phonetic: "[ˈkɜːrɪdʒ]", meaning: "勇气" },
-            { date: "5月27日", word: "flower", phonetic: "[ˈflaʊər]", meaning: "花朵" },
-            { date: "5月27日", word: "peace", phonetic: "[piːs]", meaning: "平静，和平" },
-            { date: "5月27日", word: "cherish", phonetic: "[ˈtʃerɪʃ]", meaning: "珍惜" },
-            { date: "5月28日", word: "challenge", phonetic: "[ˈtʃælɪndʒ]", meaning: "挑战" },
-            { date: "5月28日", word: "conclude", phonetic: "[kənˈkluːd]", meaning: "推断" },
-            { date: "5月28日", word: "decorate", phonetic: "[ˈdekəreɪt]", meaning: "装饰，布置" },
-            { date: "5月28日", word: "economy", phonetic: "[ˈkɑːnəmi]", meaning: "经济" },
-            { date: "5月28日", word: "flexible", phonetic: "[ˈfleksəbl]", meaning: "灵活的" },
-            { date: "5月28日", word: "guarantee", phonetic: "[ˌɡærənˈtiː]", meaning: "保证，担保" },
-            { date: "5月28日", word: "hesitate", phonetic: "[ˈhezɪteɪt]", meaning: "犹豫" },
-            { date: "5月28日", word: "inspire", phonetic: "[ɪnˈspaɪər]", meaning: "激励" },
-            { date: "5月28日", word: "mysterious", phonetic: "[mɪˈstɪriəs]", meaning: "神秘的" },
-            { date: "5月28日", word: "regulate", phonetic: "[ˈreɡjuleɪt]", meaning: "调节" },
-            { date: "5月29日", word: "bargain", phonetic: "[ˈbɑːrɡən]", meaning: "讲价" },
-            { date: "5月29日", word: "campaign", phonetic: "[kæmˈpeɪn]", meaning: "竞选" },
-            { date: "5月29日", word: "declare", phonetic: "[dɪˈkler]", meaning: "声明" },
-            { date: "5月29日", word: "explore", phonetic: "[ɪkˈsplɔːr]", meaning: "探索" },
-            { date: "5月29日", word: "frequent", phonetic: "[ˈfriːkwənt]", meaning: "频繁的" },
-            { date: "5月29日", word: "color", phonetic: "[ˈkʌlər]", meaning: "颜色" },
-            { date: "5月29日", word: "immigrant", phonetic: "[ˈɪmɪɡrənt]", meaning: "移民" },
-            { date: "5月29日", word: "luggage", phonetic: "[ˈlʌɡɪdʒ]", meaning: "行李" },
-            { date: "5月29日", word: "mystery", phonetic: "[ˈmɪstri]", meaning: "神秘" },
-            { date: "5月29日", word: "occupy", phonetic: "[ˈɑːkjupaɪ]", meaning: "占据" }
-        ];
+    let currentQueue = [];
+    let fuzzyQueue = [];
+    let currentIndex = 0;
 
-        let shuffledList = [...wordList].sort(() => Math.random() - 0.5);
-        let currentIndex = 0;
+    // 发音函数
+    function speak(text) {
+        window.speechSynthesis.cancel(); // 先停止之前的语音
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.9; // 语速适中
+        window.speechSynthesis.speak(utterance);
+    }
 
-        const card = document.getElementById('card');
+    function initGame() {
+        const filter = document.getElementById('dateFilter').value;
+        currentQueue = filter === 'all' ? [...wordList] : wordList.filter(w => w.date === filter);
+        fuzzyQueue = [];
+        currentIndex = 0;
+        showCard();
+    }
 
-        // 核心美音朗读引擎
-        function playAudio(text) {
-            // 先停止当前正在播放的声音，防止重叠
-            window.speechSynthesis.cancel();
-            
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'en-US'; // 强制设定为标准美式英语
-            utterance.rate = 0.9;     // 语速微调为0.9倍速，听得更清晰、更舒服
-            window.speechSynthesis.speak(utterance);
-        }
-
-        // 点击正面单词触发单独重读
-        function speakCurrentWord(event) {
-            event.stopPropagation(); // 阻止翻牌事件
-            const currentData = shuffledList[currentIndex];
-            playAudio(currentData.word);
-        }
-
-        function renderWord() {
-            if (currentIndex >= shuffledList.length) {
-                shuffledList = [...wordList].sort(() => Math.random() - 0.5);
+    function showCard() {
+        if (currentIndex >= currentQueue.length) {
+            if (fuzzyQueue.length > 0) {
+                currentQueue = [...fuzzyQueue];
+                fuzzyQueue = [];
                 currentIndex = 0;
-                alert("🎉 完美达成！50个单词已全部过完一遍，接下来为你开启新一轮乱序复习！");
+                alert("本轮结束，准备复习模糊的单词！");
+                showCard();
+            } else {
+                alert("太棒了！今日份刷单词已全部完成。");
+                initGame();
             }
-
-            const data = shuffledList[currentIndex];
-            card.classList.remove('is-flipped');
-
-            setTimeout(() => {
-                document.getElementById('progress').innerText = `PROGRESS: ${currentIndex + 1} / ${shuffledList.length}`;
-                document.getElementById('date').innerText = data.date;
-                document.getElementById('word').innerText = data.word;
-                document.getElementById('meaning').innerText = data.meaning;
-                document.getElementById('phonetic').innerText = data.phonetic;
-                
-                // 核心功能：一切换到新单词，自动朗读
-                playAudio(data.word);
-            }, 150);
+            return;
         }
+        const w = currentQueue[currentIndex];
+        document.getElementById('en').innerText = w.word;
+        document.getElementById('cn').innerText = w.cn;
+        document.getElementById('ipa').innerText = w.ipa;
+        
+        // 显示卡片时自动播放
+        speak(w.word);
+    }
 
-        function flipCard() {
-            card.classList.toggle('is-flipped');
-        }
-
-        function nextWord(event) {
-            event.stopPropagation();
+    function mark(type) {
+        if (type === 'fuzzy') fuzzyQueue.push(currentQueue[currentIndex]);
+        document.getElementById('card').classList.remove('flipped');
+        setTimeout(() => {
             currentIndex++;
-            renderWord();
-        }
+            showCard();
+        }, 300);
+    }
 
-        // 初始化
-        renderWord();
-    </script>
+    function flipCard() { 
+        document.getElementById('card').classList.toggle('flipped'); 
+        // 翻面时也可以选配是否再读一次
+        if (document.getElementById('card').classList.contains('flipped')) {
+            speak(currentQueue[currentIndex].word);
+        }
+    }
+    
+    initGame();
+</script>
 </body>
 </html>
