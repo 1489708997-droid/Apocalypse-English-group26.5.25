@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>作业帮刷单词</title>
+    <title>每日背单词</title>
     <style>
         :root { --bg: #f0f4f8; --card: #ffffff; --primary: #4a90e2; }
         body { font-family: sans-serif; background: var(--bg); display: flex; flex-direction: column; align-items: center; padding: 20px; }
@@ -47,68 +47,61 @@
     const wordList = [
         {date:"05/30", word:"accelerate", cn:"加速", ipa:"/ækˈsɛləˌreɪt/"},
         {date:"05/30", word:"apparent", cn:"明显", ipa:"/əˈpɛrənt/"},
-        // ... (其余单词列表请保持完整)
+        // ... (保持你完整的 wordList)
     ];
 
-    let currentQueue = [];
-    let fuzzyQueue = [];
-    let currentIndex = 0;
+    let currentQueue = []; // 当前剩余要背的单词队列
+    let fuzzyQueue = [];   // 本轮背错的单词队列
 
-    // 发音函数
     function speak(text) {
-        window.speechSynthesis.cancel(); // 先停止之前的语音
+        window.speechSynthesis.cancel();
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = 'en-US';
-        utterance.rate = 0.9; // 语速适中
         window.speechSynthesis.speak(utterance);
     }
 
     function initGame() {
         const filter = document.getElementById('dateFilter').value;
+        // 初始加载该日期的所有单词
         currentQueue = filter === 'all' ? [...wordList] : wordList.filter(w => w.date === filter);
         fuzzyQueue = [];
-        currentIndex = 0;
         showCard();
     }
 
     function showCard() {
-        if (currentIndex >= currentQueue.length) {
+        // 如果当前队列空了
+        if (currentQueue.length === 0) {
+            // 如果模糊队列还有内容，把模糊的变成新的当前队列，并清空模糊队列
             if (fuzzyQueue.length > 0) {
                 currentQueue = [...fuzzyQueue];
                 fuzzyQueue = [];
-                currentIndex = 0;
-                alert("本轮结束，准备复习模糊的单词！");
                 showCard();
             } else {
-                alert("太棒了！今日份刷单词已全部完成。");
+                alert("太棒了！今日份刷单词已全部掌握。");
                 initGame();
             }
             return;
         }
-        const w = currentQueue[currentIndex];
+        
+        const w = currentQueue[0]; // 始终取队列第一个
         document.getElementById('en').innerText = w.word;
         document.getElementById('cn').innerText = w.cn;
         document.getElementById('ipa').innerText = w.ipa;
-        
-        // 显示卡片时自动播放
         speak(w.word);
     }
 
     function mark(type) {
-        if (type === 'fuzzy') fuzzyQueue.push(currentQueue[currentIndex]);
+        const word = currentQueue.shift(); // 移除并获取队列第一个
+        if (type === 'fuzzy') {
+            fuzzyQueue.push(word); // 放入模糊队列
+        }
+        
         document.getElementById('card').classList.remove('flipped');
-        setTimeout(() => {
-            currentIndex++;
-            showCard();
-        }, 300);
+        setTimeout(showCard, 300);
     }
 
     function flipCard() { 
         document.getElementById('card').classList.toggle('flipped'); 
-        // 翻面时也可以选配是否再读一次
-        if (document.getElementById('card').classList.contains('flipped')) {
-            speak(currentQueue[currentIndex].word);
-        }
     }
     
     initGame();
