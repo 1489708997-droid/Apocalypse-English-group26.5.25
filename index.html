@@ -4,21 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>每日单词打卡</title>
-    <link rel="manifest" href='data:application/manifest+json,{"name":"每日单词打卡","short_name":"单词打卡","start_url":"./index.html","display":"standalone","background_color":"#f0f4f8","theme_color":"#4a90e2"}'>
     <style>
         :root { --bg: #f0f4f8; --card: #ffffff; --primary: #4a90e2; }
         body { font-family: sans-serif; background: var(--bg); display: flex; flex-direction: column; align-items: center; padding: 20px; height: 100vh; margin: 0; box-sizing: border-box; }
-        .controls-top { margin-bottom: 20px; }
+        .controls-top { margin-bottom: 10px; }
         .card-container { width: 85vw; height: 300px; perspective: 1000px; cursor: pointer; }
         .card { width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; position: relative; }
         .card.flipped { transform: rotateY(180deg); }
         .face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--card); border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); padding: 20px; box-sizing: border-box; }
         .back { transform: rotateY(180deg); }
-        .btn-group { margin-top: 30px; display: flex; gap: 20px; }
-        button { padding: 15px 30px; border: none; border-radius: 30px; background: var(--primary); color: white; cursor: pointer; font-size: 16px; }
+        .btn-group { margin-top: 20px; display: flex; gap: 15px; align-items: center; }
+        button { padding: 15px 25px; border: none; border-radius: 30px; background: var(--primary); color: white; cursor: pointer; font-size: 16px; }
+        .speaker-btn { background: #607d8b; border-radius: 50%; width: 50px; height: 50px; font-size: 20px; }
         .word-en { font-size: 2.5rem; font-weight: bold; }
-        .word-cn { font-size: 1.5rem; color: #666; }
-        .ipa { color: #888; margin-top: 10px; font-size: 1.1rem; }
+        .word-cn { font-size: 1.5rem; color: #666; margin-bottom: 10px; }
+        .ipa { color: #888; font-size: 1.2rem; }
     </style>
 </head>
 <body>
@@ -35,7 +35,7 @@
     </select>
 </div>
 
-<div class="card-container" onclick="flipCard()">
+<div class="card-container" onclick="handleCardClick()">
     <div class="card" id="card">
         <div class="face front"><h1 id="en" class="word-en">点击开始</h1></div>
         <div class="face back">
@@ -47,72 +47,30 @@
 
 <div class="btn-group">
     <button onclick="mark('fuzzy')" style="background:#e67e22">模糊</button>
+    <button class="speaker-btn" onclick="playAudio()">🔊</button>
     <button onclick="mark('known')" style="background:#50c878">认识</button>
 </div>
 
 <script>
     const wordList = [
-        {date:"05/30", word:"accelerate", cn:"加速", ipa:"/ækˈsɛləˌreɪt/"},
-        {date:"05/30", word:"apparent", cn:"明显", ipa:"/əˈpɛrənt/"},
-        {date:"05/30", word:"brilliant", cn:"杰出", ipa:"/ˈbrɪljənt/"},
-        {date:"05/30", word:"desperate", cn:"绝望的", ipa:"/ˈdɛspərɪt/"},
-        {date:"05/30", word:"distinguish", cn:"区别", ipa:"/dɪˈstɪŋɡwɪʃ/"},
-        {date:"05/30", word:"private", cn:"私人", ipa:"/ˈpraɪvɪt/"},
-        {date:"05/30", word:"resist", cn:"抵抗", ipa:"/rɪˈzɪst/"},
-        {date:"05/30", word:"restroom", cn:"洗手间", ipa:"/ˈrɛstruːm/"},
-        {date:"05/30", word:"honor", cn:"荣耀", ipa:"/ˈɑnər/"},
-        {date:"05/30", word:"goal", cn:"目标", ipa:"/ɡoʊl/"},
-        {date:"05/25", word:"volunteer", cn:"志愿者", ipa:"/ˌvɑlənˈtɪr/"},
-        {date:"05/26", word:"admit", cn:"承认", ipa:"/ədˈmɪt/"},
-        {date:"05/26", word:"afford", cn:"买得起", ipa:"/əˈfɔrd/"},
-        {date:"05/26", word:"agreement", cn:"协议", ipa:"/əˈɡrimənt/"},
-        {date:"05/26", word:"alarm", cn:"警报，闹钟", ipa:"/əˈlɑrm/"},
-        {date:"05/26", word:"allow", cn:"允许", ipa:"/əˈlaʊ/"},
-        {date:"05/26", word:"amaze", cn:"被惊到", ipa:"/əˈmeɪz/"},
-        {date:"05/26", word:"ancient", cn:"古代的", ipa:"/ˈeɪnʃənt/"},
-        {date:"05/26", word:"announce", cn:"宣布", ipa:"/əˈnaʊns/"},
-        {date:"05/26", word:"anxious", cn:"焦虑", ipa:"/ˈæŋkʃəs/"},
-        {date:"05/26", word:"apologize", cn:"道歉", ipa:"/əˈpɑləˌdʒaɪz/"},
-        {date:"05/27", word:"sunshine", cn:"阳光", ipa:"/ˈsʌnˌʃaɪn/"},
-        {date:"05/27", word:"breeze", cn:"微风", ipa:"/briz/"},
-        {date:"05/27", word:"dream", cn:"梦想", ipa:"/drim/"},
-        {date:"05/27", word:"gentle", cn:"温柔的", ipa:"/ˈdʒɛntəl/"},
-        {date:"05/27", word:"journey", cn:"旅途", ipa:"/ˈdʒɜrni/"},
-        {date:"05/27", word:"smile", cn:"微笑", ipa:"/smaɪl/"},
-        {date:"05/27", word:"courage", cn:"勇气", ipa:"/ˈkɜrɪdʒ/"},
-        {date:"05/27", word:"flower", cn:"花朵", ipa:"/ˈflaʊər/"},
-        {date:"05/27", word:"peace", cn:"平静，和平", ipa:"/pis/"},
-        {date:"05/27", word:"cherish", cn:"珍惜", ipa:"/ˈtʃɛrɪʃ/"},
-        {date:"05/28", word:"challenge", cn:"挑战", ipa:"/ˈtʃæləndʒ/"},
-        {date:"05/28", word:"conclude", cn:"推断", ipa:"/kənˈklud/"},
-        {date:"05/28", word:"decorate", cn:"装饰，布置", ipa:"/ˈdɛkəˌreɪt/"},
-        {date:"05/28", word:"economy", cn:"经济", ipa:"/ɪˈkɑnəmi/"},
-        {date:"05/28", word:"flexible", cn:"灵活的", ipa:"/ˈflɛksəbəl/"},
-        {date:"05/28", word:"guarantee", cn:"保证，担保", ipa:"/ˌɡærənˈti/"},
-        {date:"05/28", word:"hesitate", cn:"犹豫", ipa:"/ˈhɛzɪˌteɪt/"},
-        {date:"05/28", word:"inspire", cn:"激励", ipa:"/ɪnˈspaɪər/"},
-        {date:"05/28", word:"mysterious", cn:"神秘的", ipa:"/mɪˈstɪriəs/"},
-        {date:"05/28", word:"regulate", cn:"调节", ipa:"/ˈrɛɡjəˌleɪt/"},
-        {date:"05/29", word:"bargain", cn:"讲价", ipa:"/ˈbɑrɡɪn/"},
-        {date:"05/29", word:"campaign", cn:"竞选", ipa:"/kæmˈpeɪn/"},
-        {date:"05/29", word:"declare", cn:"声明", ipa:"/dɪˈklɛr/"},
-        {date:"05/29", word:"explore", cn:"探索", ipa:"/ɪkˈsplɔr/"},
-        {date:"05/29", word:"frequent", cn:"频繁的", ipa:"/ˈfrikwənt/"},
-        {date:"05/29", word:"color", cn:"颜色", ipa:"/ˈkʌlər/"},
-        {date:"05/29", word:"immigrant", cn:"移民", ipa:"/ˈɪmɪɡrənt/"},
-        {date:"05/29", word:"luggage", cn:"行李", ipa:"/ˈlʌɡɪdʒ/"},
-        {date:"05/29", word:"mystery", cn:"神秘", ipa:"/ˈmɪstəri/"},
-        {date:"05/29", word:"occupy", cn:"占据", ipa:"/ˈɑkjəˌpaɪ/"}
+        {date:"05/25", word:"advantage", cn:"优势", ipa:"/ədˈvæntɪdʒ/"},{date:"05/25", word:"abandon", cn:"抛弃", ipa:"/əˈbændən/"},{date:"05/25", word:"achieve", cn:"实现", ipa:"/əˈtʃiv/"},{date:"05/25", word:"benefit", cn:"益处", ipa:"/ˈbɛnəfɪt/"},{date:"05/25", word:"challenge", cn:"挑战", ipa:"/ˈtʃæləndʒ/"},{date:"05/25", word:"confident", cn:"自信", ipa:"/ˈkɑnfɪdənt/"},{date:"05/25", word:"determine", cn:"衡量", ipa:"/dɪˈtɜrmɪn/"},{date:"05/25", word:"efficient", cn:"高效", ipa:"/ɪˈfɪʃənt/"},{date:"05/25", word:"frequent", cn:"频繁", ipa:"/ˈfrikwənt/"},{date:"05/25", word:"volunteer", cn:"志愿者", ipa:"/ˌvɑlənˈtɪr/"},
+        {date:"05/26", word:"admit", cn:"承认", ipa:"/ədˈmɪt/"},{date:"05/26", word:"afford", cn:"买得起", ipa:"/əˈfɔrd/"},{date:"05/26", word:"agreement", cn:"协议", ipa:"/əˈɡrimənt/"},{date:"05/26", word:"alarm", cn:"警报，闹钟", ipa:"/əˈlɑrm/"},{date:"05/26", word:"allow", cn:"允许", ipa:"/əˈlaʊ/"},{date:"05/26", word:"amaze", cn:"被惊到", ipa:"/əˈmeɪz/"},{date:"05/26", word:"ancient", cn:"古代的", ipa:"/ˈeɪnʃənt/"},{date:"05/26", word:"announce", cn:"宣布", ipa:"/əˈnaʊns/"},{date:"05/26", word:"anxious", cn:"焦虑", ipa:"/ˈæŋkʃəs/"},{date:"05/26", word:"apologize", cn:"道歉", ipa:"/əˈpɑləˌdʒaɪz/"},
+        {date:"05/27", word:"sunshine", cn:"阳光", ipa:"/ˈsʌnˌʃaɪn/"},{date:"05/27", word:"breeze", cn:"微风", ipa:"/briz/"},{date:"05/27", word:"dream", cn:"梦想", ipa:"/drim/"},{date:"05/27", word:"gentle", cn:"温柔的", ipa:"/ˈdʒɛntəl/"},{date:"05/27", word:"journey", cn:"旅途", ipa:"/ˈdʒɜrni/"},{date:"05/27", word:"smile", cn:"微笑", ipa:"/smaɪl/"},{date:"05/27", word:"courage", cn:"勇气", ipa:"/ˈkɜrɪdʒ/"},{date:"05/27", word:"flower", cn:"花朵", ipa:"/ˈflaʊər/"},{date:"05/27", word:"peace", cn:"平静，和平", ipa:"/pis/"},{date:"05/27", word:"cherish", cn:"珍惜", ipa:"/ˈtʃɛrɪʃ/"},
+        {date:"05/28", word:"challenge", cn:"挑战", ipa:"/ˈtʃæləndʒ/"},{date:"05/28", word:"conclude", cn:"推断", ipa:"/kənˈklud/"},{date:"05/28", word:"decorate", cn:"装饰，布置", ipa:"/ˈdɛkəˌreɪt/"},{date:"05/28", word:"economy", cn:"经济", ipa:"/ɪˈkɑnəmi/"},{date:"05/28", word:"flexible", cn:"灵活的", ipa:"/ˈflɛksəbəl/"},{date:"05/28", word:"guarantee", cn:"保证，担保", ipa:"/ˌɡærənˈti/"},{date:"05/28", word:"hesitate", cn:"犹豫", ipa:"/ˈhɛzɪˌteɪt/"},{date:"05/28", word:"inspire", cn:"激励", ipa:"/ɪnˈspaɪər/"},{date:"05/28", word:"mysterious", cn:"神秘的", ipa:"/mɪˈstɪriəs/"},{date:"05/28", word:"regulate", cn:"调节", ipa:"/ˈrɛɡjəˌreɪt/"},
+        {date:"05/29", word:"bargain", cn:"讲价", ipa:"/ˈbɑrɡɪn/"},{date:"05/29", word:"campaign", cn:"竞选", ipa:"/kæmˈpeɪn/"},{date:"05/29", word:"declare", cn:"声明", ipa:"/dɪˈklɛr/"},{date:"05/29", word:"explore", cn:"探索", ipa:"/ɪkˈsplɔr/"},{date:"05/29", word:"frequent", cn:"频繁的", ipa:"/ˈfrikwənt/"},{date:"05/29", word:"color", cn:"颜色", ipa:"/ˈkʌlər/"},{date:"05/29", word:"immigrant", cn:"移民", ipa:"/ˈɪmɪɡrənt/"},{date:"05/29", word:"luggage", cn:"行李", ipa:"/ˈlʌɡɪdʒ/"},{date:"05/29", word:"mystery", cn:"神秘", ipa:"/ˈmɪstəri/"},{date:"05/29", word:"occupy", cn:"占据", ipa:"/ˈɑkjəˌpaɪ/"},
+        {date:"05/30", word:"accelerate", cn:"加速", ipa:"/ækˈsɛləˌreɪt/"},{date:"05/30", word:"apparent", cn:"明显", ipa:"/əˈpɛrənt/"},{date:"05/30", word:"brilliant", cn:"杰出", ipa:"/ˈbrɪljənt/"},{date:"05/30", word:"desperate", cn:"绝望的", ipa:"/ˈdɛspərɪt/"},{date:"05/30", word:"distinguish", cn:"区别", ipa:"/dɪˈstɪŋɡwɪʃ/"},{date:"05/30", word:"private", cn:"私人", ipa:"/ˈpraɪvɪt/"},{date:"05/30", word:"resist", cn:"抵抗", ipa:"/rɪˈzɪst/"},{date:"05/30", word:"restroom", cn:"洗手间", ipa:"/ˈrɛstruːm/"},{date:"05/30", word:"honor", cn:"荣耀", ipa:"/ˈɑnər/"},{date:"05/30", word:"goal", cn:"目标", ipa:"/ɡoʊl/"}
     ];
 
     let currentQueue = [];
     let fuzzyQueue = [];
 
-    function speak(text) {
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'en-US';
-        window.speechSynthesis.speak(utterance);
+    function playAudio() {
+        if(currentQueue.length > 0) {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(currentQueue[0].word);
+            utterance.lang = 'en-US';
+            window.speechSynthesis.speak(utterance);
+        }
     }
 
     function initGame() {
@@ -138,7 +96,12 @@
         document.getElementById('en').innerText = w.word;
         document.getElementById('cn').innerText = w.cn;
         document.getElementById('ipa').innerText = w.ipa;
-        speak(w.word);
+        // 移除了这里的自动播放
+    }
+
+    function handleCardClick() {
+        document.getElementById('card').classList.toggle('flipped');
+        playAudio(); // 点击卡片即播放
     }
 
     function mark(type) {
@@ -147,8 +110,6 @@
         document.getElementById('card').classList.remove('flipped');
         setTimeout(showCard, 300);
     }
-
-    function flipCard() { document.getElementById('card').classList.toggle('flipped'); }
     
     initGame();
 </script>
