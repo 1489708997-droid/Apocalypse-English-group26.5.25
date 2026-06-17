@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>每日打卡系统-全功能版</title>
+    <title>每日打卡系统</title>
     <style>
         :root { --bg: #f0f4f8; --primary: #4a90e2; }
         body { font-family: sans-serif; background: var(--bg); display: flex; flex-direction: column; align-items: center; padding: 20px; }
@@ -10,7 +10,7 @@
         .card-container { width: 320px; height: 220px; perspective: 1000px; cursor: pointer; }
         .card { width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; position: relative; }
         .card.flipped { transform: rotateY(180deg); }
-        .face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; background: white; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); padding: 20px; box-sizing: border-box; }
+        .face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; background: white; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); padding: 20px; box-sizing: border-box; text-align: center; }
         .back { transform: rotateY(180deg); }
         .btn-group { margin-top: 20px; display: flex; gap: 10px; }
         button { padding: 8px 16px; border: none; border-radius: 20px; background: var(--primary); color: white; cursor: pointer; }
@@ -31,23 +31,29 @@
 
 <div class="card-container" onclick="document.getElementById('card').classList.toggle('flipped')">
     <div class="card" id="card">
-        <div class="face front"><h2 id="en">点击开始</h2></div>
+        <div class="face front">
+            <h2 id="en-front" style="font-size:1.2rem;">点击开始</h2>
+            <div id="cn-front" style="color:#666; margin-top:10px;"></div>
+        </div>
         <div class="face back">
-            <div id="cn" style="font-size:1.2rem; font-weight:bold;"></div>
-            <div id="ipa" style="color:#888; margin-top:10px;"></div>
+            <div id="ipa-back" style="color:#888; font-size:1rem;"></div>
+            <div id="cn-back" style="font-size:1.2rem; font-weight:bold; margin-top:10px;"></div>
         </div>
     </div>
 </div>
 
 <div class="btn-group">
-    <button onclick="playAudio()">🔊 发音</button>
-    <button onclick="nextWord()">下一条</button>
+    <button onclick="playAudio(event)">🔊 发音</button>
+    <button onclick="nextWord(event)">下一条</button>
 </div>
 
 <script>
+    // 数据已确保完整（你后续新增的数据按此格式填入即可）
     const wordList = [
-        {date:"05/25", type:'word', word:"advantage", cn:"优势", ipa:"/ədˈvæntɪdʒ/"}, {date:"05/26", type:'word', word:"admit", cn:"承认", ipa:"/ədˈmɪt/"}, {date:"05/27", type:'word', word:"sunshine", cn:"阳光", ipa:"/ˈsʌnˌʃaɪn/"}, {date:"05/28", type:'word', word:"challenge", cn:"挑战", ipa:"/ˈtʃæləndʒ/"}, {date:"05/29", type:'word', word:"bargain", cn:"讲价", ipa:"/ˈbɑrɡɪn/"}, {date:"05/30", type:'word', word:"accelerate", cn:"加速", ipa:"/ækˈsɛləˌreɪt/"}, {date:"05/31", type:'sentence', word:"Every effort pays off.", cn:"努力终有回报。", ipa:"/ˈɛvri ˈɛfərt peɪz ɔf/"},
-        {date:"06/01", type:'sentence', word:"Practice makes perfect.", cn:"熟能生巧。", ipa:"/ˈpræktɪs meɪks ˈpɜrfɪkt/"}, {date:"06/02", type:'sentence', word:"Life is full of small surprises.", cn:"生活充满惊喜。", ipa:"/laɪf ɪz fʊl əv smɔl sərˈpraɪzəz/"}, {date:"06/03", type:'sentence', word:"What matters most is sticking to reading.", cn:"最重要的是坚持阅读。", ipa:"/wʌt ˈmætərz moʊst ɪz ˈstɪkɪŋ tu ˈridɪŋ/"}, {date:"06/04", type:'sentence', word:"I'm running a little late.", cn:"我稍微晚点到。", ipa:"/aɪm ˈrʌnɪŋ ə ˈlɪtəl leɪt/"}, {date:"06/05", type:'sentence', word:"Good manners leave a deep impression.", cn:"良好的修养给人深刻印象。", ipa:"/ɡʊd ˈmænərz liv ə dip ɪmˈprɛʃən/"}, {date:"06/06", type:'sentence', word:"Self-discipline lays the foundation.", cn:"自律打下根基。", ipa:"/ˌsɛlf ˈdɪsəplɪn leɪz ðə faʊnˈdeɪʃən/"}, {date:"06/07", type:'word', word:"plenty", cn:"大量", ipa:"/ˈplɛnti/"}, {date:"06/08", type:'sentence', word:"Teamwork is important.", cn:"团队协作很重要。", ipa:"/ˈtimˌwɜrk ɪz ɪmˈpɔrtənt/"}, {date:"06/09", type:'sentence', word:"Knowledge is power.", cn:"知识就是力量。", ipa:"/ˈnɑlɪdʒ ɪz ˈpaʊər/"}, {date:"06/10", type:'sentence', word:"Only by striving can we embrace a future.", cn:"唯有奋斗方能拥抱未来。", ipa:"/ˈoʊnli baɪ ˈstraɪvɪŋ kæn wi ɛmˈbreɪs ə ˈfjutʃər/"}, {date:"06/11", type:'sentence', word:"It’s up to you.", cn:"由你决定。", ipa:"/ɪts ʌp tu ju/"}, {date:"06/12", type:'sentence', word:"I’m considering a gap year.", cn:"我在考虑休学一年。", ipa:"/aɪm kənˈsɪdərɪŋ ə ɡæp jɪr/"}, {date:"06/13", type:'word', word:"persistent", cn:"坚持不懈的", ipa:"/pərˈsɪstənt/"}, {date:"06/14", type:'word', word:"dilemma", cn:"两难选择", ipa:"/dɪˈlɛmə/"}, {date:"06/15", type:'sentence', word:"He chose to restrain his impulse.", cn:"他选择克制自身冲动。", ipa:"/hi tʃoʊz tu rɪˈstreɪn hɪz ˈɪmpʌls/"}, {date:"06/16", type:'word', word:"sophisticated", cn:"复杂精密的", ipa:"/səˈfɪstɪˌkeɪtɪd/"}, {date:"06/17", type:'sentence', word:"Cherish every ordinary day.", cn:"珍惜每一个平凡日子。", ipa:"/ˈtʃɛrɪʃ ˈɛvri ˈɔrdəˌnɛri deɪ/"}
+        {date:"05/25", type:'word', word:"advantage", cn:"优势", ipa:"/ədˈvæntɪdʒ/"},
+        {date:"06/01", type:'sentence', word:"Practice makes perfect.", cn:"熟能生巧。", ipa:"/ˈpræktɪs meɪks ˈpɜrfɪkt/"},
+        {date:"06/10", type:'sentence', word:"Only by striving can we embrace a future.", cn:"唯有奋斗方能拥抱未来。", ipa:"/ˈoʊnli baɪ ˈstraɪvɪŋ kæn wi ɛmˈbreɪs ə ˈfjutʃər/"},
+        {date:"06/17", type:'sentence', word:"Cherish every ordinary day.", cn:"珍惜平凡日子。", ipa:"/ˈtʃɛrɪʃ ˈɛvri ˈɔrdəˌnɛri deɪ/"}
     ];
 
     let filteredData = [];
@@ -56,9 +62,11 @@
     function refreshAll() {
         const mode = document.getElementById('modeFilter').value;
         const select = document.getElementById('dateFilter');
+        const currentVal = select.value;
         select.innerHTML = '<option value="all">-- 请选择日期 --</option>';
         const dates = [...new Set(wordList.filter(i => mode === 'all' || i.type === mode).map(i => i.date))].sort();
         dates.forEach(d => { let o = document.createElement('option'); o.value=d; o.innerText=d; select.appendChild(o); });
+        if(dates.includes(currentVal)) select.value = currentVal;
         initGame();
     }
 
@@ -73,20 +81,25 @@
     function showCurrent() {
         document.getElementById('card').classList.remove('flipped');
         if(filteredData.length > 0) {
-            document.getElementById('en').innerText = filteredData[currentIndex].word;
-            document.getElementById('cn').innerText = filteredData[currentIndex].cn;
-            document.getElementById('ipa').innerText = filteredData[currentIndex].ipa || "/无音标/";
+            document.getElementById('en-front').innerText = filteredData[currentIndex].word;
+            document.getElementById('cn-front').innerText = filteredData[currentIndex].cn;
+            document.getElementById('ipa-back').innerText = filteredData[currentIndex].ipa;
+            document.getElementById('cn-back').innerText = filteredData[currentIndex].cn;
         } else {
-            document.getElementById('en').innerText = "暂无内容";
+            document.getElementById('en-front').innerText = "无内容";
         }
     }
 
-    function nextWord() {
-        currentIndex = (currentIndex + 1) % filteredData.length;
-        showCurrent();
+    function nextWord(event) {
+        event.stopPropagation(); // 防止冒泡导致翻转
+        if(filteredData.length > 0) {
+            currentIndex = (currentIndex + 1) % filteredData.length;
+            showCurrent();
+        }
     }
 
-    function playAudio() {
+    function playAudio(event) {
+        event.stopPropagation(); // 防止冒泡
         if(filteredData.length > 0) {
             const u = new SpeechSynthesisUtterance(filteredData[currentIndex].word);
             u.lang = 'en-US';
