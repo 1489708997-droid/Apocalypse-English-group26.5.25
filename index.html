@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>每日打卡系统-最终修正版</title>
+    <title>每日打卡系统-逻辑修正版</title>
     <style>
         :root { --bg: #f0f4f8; --primary: #4a90e2; }
         body { font-family: sans-serif; background: var(--bg); display: flex; flex-direction: column; align-items: center; padding: 20px; }
@@ -12,7 +12,8 @@
         .card.flipped { transform: rotateY(180deg); }
         .face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; background: white; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); padding: 20px; box-sizing: border-box; text-align: center; }
         .back { transform: rotateY(180deg); }
-        .btn-group { margin-top: 20px; display: flex; gap: 10px; }
+        .btn-group { margin-top: 20px; display: flex; gap: 10px; flex-direction: column; align-items: center;}
+        .btns { display: flex; gap: 10px; }
         button { padding: 8px 16px; border: none; border-radius: 20px; background: var(--primary); color: white; cursor: pointer; }
     </style>
 </head>
@@ -32,6 +33,7 @@
 <div class="card-container" onclick="document.getElementById('card').classList.toggle('flipped')">
     <div class="card" id="card">
         <div class="face front">
+            <div id="counter" style="font-size:0.8rem; color:#aaa; margin-bottom:5px;"></div>
             <h2 id="en-front" style="font-size:1.2rem;">点击开始</h2>
             <div id="cn-front" style="color:#666; margin-top:10px;"></div>
         </div>
@@ -43,8 +45,11 @@
 </div>
 
 <div class="btn-group">
-    <button onclick="playAudio(event)">🔊 发音</button>
-    <button onclick="nextWord(event)">下一条</button>
+    <div class="btns">
+        <button onclick="playAudio(event)">🔊 发音</button>
+        <button onclick="nextWord(event)">下一条</button>
+    </div>
+    <div id="msg" style="font-size:0.8rem; color:#d35400;"></div>
 </div>
 
 <script>
@@ -70,6 +75,7 @@
         const date = document.getElementById('dateFilter').value;
         currentList = wordList.filter(i => (mode === 'all' || i.type === mode) && (date === 'all' || i.date === date));
         idx = 0;
+        document.getElementById('msg').innerText = "";
         render();
     }
 
@@ -80,13 +86,24 @@
             document.getElementById('cn-front').innerText = currentList[idx].cn;
             document.getElementById('ipa-back').innerText = currentList[idx].ipa;
             document.getElementById('cn-back').innerText = currentList[idx].cn;
+            document.getElementById('counter').innerText = (idx + 1) + " / " + currentList.length;
         } else {
             document.getElementById('en-front').innerText = "无内容";
             document.getElementById('cn-front').innerText = "";
+            document.getElementById('counter').innerText = "";
         }
     }
 
-    function nextWord(e) { e.stopPropagation(); if(currentList.length > 0) { idx = (idx + 1) % currentList.length; render(); } }
+    function nextWord(e) { 
+        e.stopPropagation(); 
+        if(currentList.length > 1) { 
+            idx = (idx + 1) % currentList.length; 
+            render(); 
+        } else if (currentList.length === 1) {
+            document.getElementById('msg').innerText = "已经是最后一条了";
+        }
+    }
+
     function playAudio(e) { e.stopPropagation(); if(currentList.length > 0) { const u = new SpeechSynthesisUtterance(currentList[idx].word); u.lang='en-US'; window.speechSynthesis.speak(u); } }
 
     refreshAll();
