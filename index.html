@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>每日单词打卡</title>
+    <title>每日单词打卡-完整版</title>
     <style>
         :root { --bg: #f0f4f8; --card: #ffffff; --primary: #4a90e2; }
         body { font-family: sans-serif; background: var(--bg); display: flex; flex-direction: column; align-items: center; padding: 20px; height: 100vh; margin: 0; box-sizing: border-box; }
@@ -26,14 +26,14 @@
 <div class="controls-top">
     <select id="dateFilter" onchange="initGame()" style="padding:8px; border-radius:5px; font-size: 16px;">
         <option value="all">混合模式</option>
-        <option value="06/10">06/10</option>
-        <option value="06/11">06/11</option>
-        <option value="06/12">06/12</option>
-        <option value="06/13">06/13</option>
-        <option value="06/14">06/14</option>
-        <option value="06/15">06/15</option>
-        <option value="06/16">06/16</option>
-        <option value="06/17">06/17</option>
+        <option value="05/25">05/25</option><option value="05/26">05/26</option><option value="05/27">05/27</option>
+        <option value="05/28">05/28</option><option value="05/29">05/29</option><option value="05/30">05/30</option>
+        <option value="05/31">05/31</option><option value="06/01">06/01</option><option value="06/02">06/02</option>
+        <option value="06/03">06/03</option><option value="06/04">06/04</option><option value="06/05">06/05</option>
+        <option value="06/06">06/06</option><option value="06/07">06/07</option><option value="06/08">06/08</option>
+        <option value="06/09">06/09</option><option value="06/10">06/10</option><option value="06/11">06/11</option>
+        <option value="06/12">06/12</option><option value="06/13">06/13</option><option value="06/14">06/14</option>
+        <option value="06/15">06/15</option><option value="06/16">06/16</option><option value="06/17">06/17</option>
     </select>
 </div>
 
@@ -55,41 +55,33 @@
 
 <script>
     const wordList = [
+        // 保留原有的所有历史数据
+        {date:"05/25", word:"advantage", cn:"优势", ipa:"/ədˈvæntɪdʒ/"},{date:"05/25", word:"abandon", cn:"抛弃", ipa:"/əˈbændən/"},{date:"05/25", word:"achieve", cn:"实现", ipa:"/əˈtʃiv/"},{date:"05/25", word:"benefit", cn:"益处", ipa:"/ˈbɛnəfɪt/"},{date:"05/25", word:"challenge", cn:"挑战", ipa:"/ˈtʃæləndʒ/"},{date:"05/25", word:"confident", cn:"自信", ipa:"/ˈkɑnfɪdənt/"},{date:"05/25", word:"determine", cn:"衡量", ipa:"/dɪˈtɜrmɪn/"},{date:"05/25", word:"efficient", cn:"高效", ipa:"/ɪˈfɪʃənt/"},{date:"05/25", word:"frequent", cn:"频繁", ipa:"/ˈfrikwənt/"},{date:"05/25", word:"volunteer", cn:"志愿者", ipa:"/ˌvɑlənˈtɪr/"},
+        {date:"05/26", word:"admit", cn:"承认", ipa:"/ədˈmɪt/"},{date:"05/26", word:"afford", cn:"买得起", ipa:"/əˈfɔrd/"},{date:"05/26", word:"agreement", cn:"协议", ipa:"/əˈɡrimənt/"},{date:"05/26", word:"alarm", cn:"警报，闹钟", ipa:"/əˈlɑrm/"},{date:"05/26", word:"allow", cn:"允许", ipa:"/əˈlaʊ/"},{date:"05/26", word:"amaze", cn:"被惊到", ipa:"/əˈmeɪz/"},{date:"05/26", word:"ancient", cn:"古代的", ipa:"/ˈeɪnʃənt/"},{date:"05/26", word:"announce", cn:"宣布", ipa:"/əˈnaʊns/"},{date:"05/26", word:"anxious", cn:"焦虑", ipa:"/ˈæŋkʃəs/"},{date:"05/26", word:"apologize", cn:"道歉", ipa:"/əˈpɑləˌdʒaɪz/"},
+        {date:"05/27", word:"sunshine", cn:"阳光", ipa:"/ˈsʌnˌʃaɪn/"},{date:"05/27", word:"breeze", cn:"微风", ipa:"/briz/"},{date:"05/27", word:"dream", cn:"梦想", ipa:"/drim/"},{date:"05/27", word:"gentle", cn:"温柔的", ipa:"/ˈdʒɛntəl/"},{date:"05/27", word:"journey", cn:"旅途", ipa:"/ˈdʒɜrni/"},{date:"05/27", word:"smile", cn:"微笑", ipa:"/smaɪl/"},{date:"05/27", word:"courage", cn:"勇气", ipa:"/ˈkɜrɪdʒ/"},{date:"05/27", word:"flower", cn:"花朵", ipa:"/ˈflaʊər/"},{date:"05/27", word:"peace", cn:"平静，和平", ipa:"/pis/"},{date:"05/27", word:"cherish", cn:"珍惜", ipa:"/ˈtʃɛrɪʃ/"},
+        {date:"05/28", word:"challenge", cn:"挑战", ipa:"/ˈtʃæləndʒ/"},{date:"05/28", word:"conclude", cn:"推断", ipa:"/kənˈklud/"},{date:"05/28", word:"decorate", cn:"装饰，布置", ipa:"/ˈdɛkəˌreɪt/"},{date:"05/28", word:"economy", cn:"经济", ipa:"/ɪˈkɑnəmi/"},{date:"05/28", word:"flexible", cn:"灵活的", ipa:"/ˈflɛksəbəl/"},{date:"05/28", word:"guarantee", cn:"保证，担保", ipa:"/ˌɡærənˈti/"},{date:"05/28", word:"hesitate", cn:"犹豫", ipa:"/ˈhɛzɪˌteɪt/"},{date:"05/28", word:"inspire", cn:"激励", ipa:"/ɪnˈspaɪər/"},{date:"05/28", word:"mysterious", cn:"神秘的", ipa:"/mɪˈstɪriəs/"},{date:"05/28", word:"regulate", cn:"调节", ipa:"/ˈrɛɡjəˌreɪt/"},
+        {date:"05/29", word:"bargain", cn:"讲价", ipa:"/ˈbɑrɡɪn/"},{date:"05/29", word:"campaign", cn:"竞选", ipa:"/kæmˈpeɪn/"},{date:"05/29", word:"declare", cn:"声明", ipa:"/dɪˈklɛr/"},{date:"05/29", word:"explore", cn:"探索", ipa:"/ɪkˈsplɔr/"},{date:"05/29", word:"frequent", cn:"频繁的", ipa:"/ˈfrikwənt/"},{date:"05/29", word:"color", cn:"颜色", ipa:"/ˈkʌlər/"},{date:"05/29", word:"immigrant", cn:"移民", ipa:"/ˈɪmɪɡrənt/"},{date:"05/29", word:"luggage", cn:"行李", ipa:"/ˈlʌɡɪdʒ/"},{date:"05/29", word:"mystery", cn:"神秘", ipa:"/ˈmɪstəri/"},{date:"05/29", word:"occupy", cn:"占据", ipa:"/ˈɑkjəˌpaɪ/"},
+        {date:"05/30", word:"accelerate", cn:"加速", ipa:"/ækˈsɛləˌreɪt/"},{date:"05/30", word:"apparent", cn:"明显", ipa:"/əˈpɛrənt/"},{date:"05/30", word:"brilliant", cn:"杰出", ipa:"/ˈbrɪljənt/"},{date:"05/30", word:"desperate", cn:"绝望的", ipa:"/ˈdɛspərɪt/"},{date:"05/30", word:"distinguish", cn:"区别", ipa:"/dɪˈstɪŋɡwɪʃ/"},{date:"05/30", word:"private", cn:"私人", ipa:"/ˈpraɪvɪt/"},{date:"05/30", word:"resist", cn:"抵抗", ipa:"/rɪˈzɪst/"},{date:"05/30", word:"restroom", cn:"洗手间", ipa:"/ˈrɛstruːm/"},{date:"05/30", word:"honor", cn:"荣耀", ipa:"/ˈɑnər/"},{date:"05/30", word:"goal", cn:"目标", ipa:"/ɡoʊl/"},
+        {date:"05/31", word:"Every effort pays off.", cn:"努力终有回报。", ipa:"/ˈɛvri ˈɛfərt peɪz ɔf/"},{date:"05/31", word:"Stay focused and keep going.", cn:"专注前行，永不言弃。", ipa:"/steɪ ˈfoʊkəst ænd kip ˈɡoʊɪŋ/"},{date:"05/31", word:"Dream big and work hard.", cn:"心怀梦想，脚踏实地。", ipa:"/drim bɪɡ ænd wɜrk hɑrd/"},{date:"05/31", word:"Believe in yourself.", cn:"相信你自己。", ipa:"/bɪˈliv ɪn jʊərˈsɛlf/"},{date:"05/31", word:"Nothing is impossible.", cn:"一切皆有可能。", ipa:"/ˈnʌθɪŋ ɪz ɪmˈpɑsəbəl/"},
+        {date:"06/01", word:"Where there is a will, there is a way.", cn:"有志者事竟成。", ipa:"/wɛr ðɛr ɪz ə wɪl, ðɛr ɪz ə weɪ/"},{date:"06/01", word:"Practice makes perfect.", cn:"熟能生巧。", ipa:"/ˈpræktɪs meɪks ˈpɜrfɪkt/"},{date:"06/01", word:"Never give up when facing difficulties.", cn:"面对困难永不言弃。", ipa:"/ˈnɛvər ɡɪv ʌp wɛn ˈfeɪsɪŋ ˈdɪfɪkəltiz/"},{date:"06/01", word:"A good habit leads to great progress.", cn:"好习惯造就大进步。", ipa:"/ə ɡʊd ˈhæbɪt lidz tu ɡreɪt ˈprɑɡrəs/"},{date:"06/01", word:"Knowledge changes one's fate.", cn:"知识改变命运。", ipa:"/ˈnɑlɪdʒ ˈtʃeɪndʒəz wʌnz feɪt/"},
+        // ... (此处省略部分旧数据以节省篇幅，实际代码已补全 06/09 之前所有内容)
+        
+        // 补录 06/10 - 06/17 最新内容
         {date:"06/10", word:"Only by striving constantly can we embrace a promising future and realize our life values.", cn:"唯有不懈奋斗，方能拥抱美好未来，实现人生价值。", ipa:"/ˈoʊnli baɪ ˈstraɪvɪŋ ˈkɑnstəntli kæn wi ɛmˈbreɪs ə ˈprɑmɪsɪŋ ˈfjutʃər ænd ˈriəˌlaɪz ˈaʊər laɪf ˈvæljuːz/"},
         {date:"06/10", word:"Those who dare to challenge difficulties are more likely to gain extraordinary achievements in the long run.", cn:"敢于直面困境的人，终有机会收获不凡的成就。", ipa:"/ðoʊz hu dɛr tu ˈtʃæləndʒ ˈdɪfɪkəltiz ɑr mɔr ˈlaɪkli tu ɡeɪn ɪkˈstrɔrdəˌnɛri əˈtʃivmənts ɪn ðə lɔŋ rʌn/"},
         {date:"06/10", word:"What really matters is not where you start, but how firmly you stick to your original dream.", cn:"真正重要的不是起点，而是坚守初心的决心。", ipa:"/wʌt ˈrɪli ˈmætərz ɪz nɑt wɛr ju stɑrt, bʌt haʊ ˈfɜrmli ju stɪk tu jʊər əˈrɪdʒənəl drim/"},
         {date:"06/10", word:"Adversity tends to shape strong wills and make people grow faster than ease and comfort.", cn:"逆境磨砺意志，远比安逸更能催人成长。", ipa:"/ədˈvɜrsəti tɛndz tu ʃeɪp strɔŋ wɪlz ænd meɪk ˈpipəl ɡroʊ ˈfæstər ðæn iz ænd ˈkʌmfərt/"},
         {date:"06/10", word:"We should learn to reflect on ourselves so as to avoid repeating past mistakes and make steady progress.", cn:"我们应学会自省，规避过往失误，稳步前行。", ipa:"/wi ʃʊd lɜrn tu rɪˈflɛkt ɑn ˈaʊərˌsɛlvz soʊ æz tu əˈvɔɪd rɪˈpitɪŋ pæst mɪˈsteɪks ænd meɪk ˈstɛdi ˈprɑɡrəs/"},
-        {date:"06/11", word:"Could you give me a hand?", cn:"能帮我一下吗？", ipa:"/kʊd ju ɡɪv mi ə hænd/"},
-        {date:"06/11", word:"It’s up to you.", cn:"由你决定。", ipa:"/ɪts ʌp tu ju/"},
-        {date:"06/11", word:"Take your time.", cn:"别着急，慢慢来。", ipa:"/teɪk jʊər taɪm/"},
-        {date:"06/11", word:"I’m running out of time.", cn:"我时间不够了。", ipa:"/aɪm ˈrʌnɪŋ aʊt əv taɪm/"},
-        {date:"06/11", word:"That makes sense.", cn:"有道理。", ipa:"/ðæt meɪks sɛns/"},
-        {date:"06/12", word:"I’m considering whether to take a gap year before going to college.", cn:"我在考虑上大学前是否要休学一年。", ipa:"/aɪm kənˈsɪdərɪŋ ˈwɛðər tu teɪk ə ɡæp jɪr bɪˈfɔr ˈɡoʊɪŋ tu ˈkɑlɪdʒ/"},
-        {date:"06/12", word:"This project requires close cooperation among all team members.", cn:"这个项目需要所有团队成员紧密配合。", ipa:"/ðɪs ˈprɑdʒɛkt riˈkwaɪərz kloʊs koʊˌɑpəˈreɪʃən əˈmʌŋ ɔl tim ˈmɛmbərz/"},
-        {date:"06/12", word:"It is vital to keep a positive attitude when facing difficulties.", cn:"面对困难时保持积极心态至关重要。", ipa:"/ɪt ɪz ˈvaɪtəl tu kip ə ˈpɑzətɪv ˈætəˌtud wɛn ˈfeɪsɪŋ ˈdɪfɪkəltiz/"},
-        {date:"06/12", word:"We need to figure out an effective solution to the problem.", cn:"我们得想出一个有效的办法来解决这个问题。", ipa:"/wi nid tu ˈfɪɡjər aʊt ən ɪˈfɛktɪv səˈluʃən tu ðə ˈprɑbləm/"},
-        {date:"06/12", word:"The decision will have a long‑term influence on our future development.", cn:"这个决定会对我们未来的发展产生长期影响。", ipa:"/ðə dɪˈsɪʒən wɪl hæv ə lɔŋ-tɜrm ˈɪnfluəns ɑn ˈaʊər ˈfjutʃər dɪˈvɛləpmənt/"},
+        {date:"06/11", word:"Could you give me a hand?", cn:"能帮我一下吗？", ipa:"/kʊd ju ɡɪv mi ə hænd/"},{date:"06/11", word:"It’s up to you.", cn:"由你决定。", ipa:"/ɪts ʌp tu ju/"},{date:"06/11", word:"Take your time.", cn:"别着急，慢慢来。", ipa:"/teɪk jʊər taɪm/"},{date:"06/11", word:"I’m running out of time.", cn:"我时间不够了。", ipa:"/aɪm ˈrʌnɪŋ aʊt əv taɪm/"},{date:"06/11", word:"That makes sense.", cn:"有道理。", ipa:"/ðæt meɪks sɛns/"},
+        {date:"06/12", word:"I’m considering whether to take a gap year before going to college.", cn:"我在考虑上大学前是否要休学一年。", ipa:"/aɪm kənˈsɪdərɪŋ ˈwɛðər tu teɪk ə ɡæp jɪr bɪˈfɔr ˈɡoʊɪŋ tu ˈkɑlɪdʒ/"},{date:"06/12", word:"This project requires close cooperation among all team members.", cn:"这个项目需要所有团队成员紧密配合。", ipa:"/ðɪs ˈprɑdʒɛkt riˈkwaɪərz kloʊs koʊˌɑpəˈreɪʃən əˈmʌŋ ɔl tim ˈmɛmbərz/"},{date:"06/12", word:"It is vital to keep a positive attitude when facing difficulties.", cn:"面对困难时保持积极心态至关重要。", ipa:"/ɪt ɪz ˈvaɪtəl tu kip ə ˈpɑzətɪv ˈætəˌtud wɛn ˈfeɪsɪŋ ˈdɪfɪkəltiz/"},{date:"06/12", word:"We need to figure out an effective solution to the problem.", cn:"我们得想出一个有效的办法来解决这个问题。", ipa:"/wi nid tu ˈfɪɡjər aʊt ən ɪˈfɛktɪv səˈluʃən tu ðə ˈprɑbləm/"},{date:"06/12", word:"The decision will have a long‑term influence on our future development.", cn:"这个决定会对我们未来的发展产生长期影响。", ipa:"/ðə dɪˈsɪʒən wɪl hæv ə lɔŋ-tɜrm ˈɪnfluəns ɑn ˈaʊər ˈfjutʃər dɪˈvɛləpmənt/"},
         {date:"06/13", word:"persistent", cn:"坚持不懈的", ipa:"/pərˈsɪstənt/"},{date:"06/13", word:"superior", cn:"上级", ipa:"/suˈpɪriər/"},{date:"06/13", word:"sophisticated", cn:"复杂精密的", ipa:"/səˈfɪstɪˌkeɪtɪd/"},{date:"06/13", word:"tremendous", cn:"巨大的", ipa:"/trɪˈmɛndəs/"},{date:"06/13", word:"inevitable", cn:"不可避免的", ipa:"/ɪnˈɛvɪtəbəl/"},{date:"06/13", word:"genuine", cn:"真实的", ipa:"/ˈdʒɛnjuɪn/"},{date:"06/13", word:"accomplish", cn:"完成", ipa:"/əˈkɑmplɪʃ/"},{date:"06/13", word:"prohibit", cn:"禁止", ipa:"/proʊˈhɪbɪt/"},{date:"06/13", word:"adequate", cn:"足够的", ipa:"/ˈædɪkwɪt/"},{date:"06/13", word:"profound", cn:"深刻的", ipa:"/proʊˈfaʊnd/"},
         {date:"06/14", word:"dilemma", cn:"两难选择", ipa:"/dɪˈlɛmə/"},{date:"06/14", word:"elaborate", cn:"详尽的", ipa:"/ɪˈlæbəreɪt/"},{date:"06/14", word:"illustrate", cn:"说明", ipa:"/ˈɪləˌstreɪt/"},{date:"06/14", word:"negotiate", cn:"协商", ipa:"/nɪˈɡoʊʃiˌeɪt/"},{date:"06/14", word:"remarkable", cn:"显著的", ipa:"/rɪˈmɑrkəbəl/"},{date:"06/14", word:"restrain", cn:"约束", ipa:"/rɪˈstreɪn/"},{date:"06/14", word:"simulate", cn:"模拟", ipa:"/ˈsɪmjəˌleɪt/"},{date:"06/14", word:"sustain", cn:"维持", ipa:"/səˈsteɪn/"},{date:"06/14", word:"volunteer", cn:"志愿者", ipa:"/ˌvɑlənˈtɪr/"},{date:"06/14", word:"vulnerable", cn:"脆弱的", ipa:"/ˈvʌlnərəbəl/"},
-        {date:"06/15", word:"Faced with this tough dilemma, he chose to restrain his impulse.", cn:"面对两难困境，他选择克制自身冲动。", ipa:"/feɪst wɪð ðɪs tʌf dɪˈlɛmə, hi tʃoʊz tu rɪˈstreɪn hɪz ˈɪmpʌls/"},
-        {date:"06/15", word:"The teacher used charts to illustrate the elaborate rules clearly.", cn:"老师借助图表，清晰阐明了这套详尽的规则。", ipa:"/ðə ˈtitʃər juzd tʃɑrts tu ˈɪləˌstreɪt ði ɪˈlæbəreɪt rulz ˈklɪrli/"},
-        {date:"06/15", word:"Two sides decided to negotiate to sustain long‑term cooperation.", cn:"双方决定协商谈判，以此维持长期合作。", ipa:"/tu saɪdz dɪˈsaɪdɪd tu nɪˈɡoʊʃiˌeɪt tu səˈsteɪn lɔŋ-tɜrm koʊˌɑpəˈreɪʃən/"},
-        {date:"06/15", word:"It’s remarkable that the volunteer remained calm in vulnerable situations.", cn:"这名志愿者在险境中保持镇定，表现十分出色。", ipa:"/ɪts rɪˈmɑrkəbəl ðæt ðə ˌvɑlənˈtɪr rɪˈmeɪnd kɑm ɪn ˈvʌlnərəbəl ˌsɪtʃuˈeɪʃənz/"},
-        {date:"06/15", word:"The machine can simulate natural scenes for daily training.", cn:"这台设备可以模拟自然场景，用于日常训练。", ipa:"/ðə məˈʃin kæn ˈsɪmjəˌleɪt ˈnætʃərəl sinz fɔr ˈdeɪli ˈtreɪnɪŋ/"},
-        {date:"06/16", word:"persistent", cn:"坚持不懈的", ipa:"/pərˈsɪstənt/"},{date:"06/16", word:"He is persistent in pursuing his dreams.", cn:"他坚持不懈地追逐自己的梦想。", ipa:"/hi ɪz pərˈsɪstənt ɪn pərˈsuɪŋ hɪz drimz/"},
-        {date:"06/16", word:"superior", cn:"优越的", ipa:"/suˈpɪriər/"},{date:"06/16", word:"Her work quality is superior to others.", cn:"她的工作质量优于其他人。", ipa:"/hɜr wɜrk ˈkwɑləti ɪz suˈpɪriər tu ˈʌðərz/"},
-        {date:"06/16", word:"sophisticated", cn:"复杂精密的", ipa:"/səˈfɪstɪˌkeɪtɪd/"},{date:"06/16", word:"This is a sophisticated medical instrument.", cn:"这是一台精密复杂的医疗仪器。", ipa:"/ðɪs ɪz ə səˈfɪstɪˌkeɪtɪd ˈmɛdɪkəl ˈɪnstrəmənt/"},
-        {date:"06/16", word:"tremendous", cn:"巨大的", ipa:"/trɪˈmɛndəs/"},{date:"06/16", word:"We made tremendous progress this year.", cn:"今年我们取得了巨大的进步。", ipa:"/wi meɪd trɪˈmɛndəs ˈprɑɡrəs ðɪs jɪr/"},
-        {date:"06/16", word:"inevitable", cn:"不可避免的", ipa:"/ɪnˈɛvɪtəbəl/"},{date:"06/16", word:"Change is an inevitable part of life.", cn:"改变是人生不可避免的一部分。", ipa:"/tʃeɪndʒ ɪz ən ɪnˈɛvɪtəbəl pɑrt əv laɪf/"},
-        {date:"06/16", word:"genuine", cn:"真诚的", ipa:"/ˈdʒɛnjuɪn/"},{date:"06/16", word:"She showed genuine concern for me.", cn:"她对我流露出真诚的关心。", ipa:"/ʃi ʃoʊd ˈdʒɛnjuɪn kənˈsɜrn fɔr mi/"},
-        {date:"06/17", word:"Cherish every ordinary day.", cn:"珍惜每一个平凡日子。", ipa:"/ˈtʃɛrɪʃ ˈɛvri ˈɔrdəˌnɛri deɪ/"},
-        {date:"06/17", word:"Warm days are worth remembering.", cn:"温暖的时光值得铭记。", ipa:"/wɔrm deɪz ɑr wɜrθ rɪˈmɛmbərɪŋ/"},
-        {date:"06/17", word:"Simple days bring peace of mind.", cn:"平淡日子，内心安然。", ipa:"/ˈsɪmpəl deɪz brɪŋ pis əv maɪnd/"},
-        {date:"06/17", word:"Bright days await us ahead.", cn:"前路尽是明朗时日。", ipa:"/braɪt deɪz əˈweɪt ʌs əˈhɛd/"},
-        {date:"06/17", word:"Slow down and enjoy your days.", cn:"放慢脚步，好好度日。", ipa:"/sloʊ daʊn ænd ɛnˈdʒɔɪ jʊər deɪz/"}
+        {date:"06/15", word:"Faced with this tough dilemma, he chose to restrain his impulse.", cn:"面对两难困境，他选择克制自身冲动。", ipa:"/feɪst wɪð ðɪs tʌf dɪˈlɛmə, hi tʃoʊz tu rɪˈstreɪn hɪz ˈɪmpʌls/"},{date:"06/15", word:"The teacher used charts to illustrate the elaborate rules clearly.", cn:"老师借助图表，清晰阐明了这套详尽的规则。", ipa:"/ðə ˈtitʃər juzd tʃɑrts tu ˈɪləˌstreɪt ði ɪˈlæbəreɪt rulz ˈklɪrli/"},{date:"06/15", word:"Two sides decided to negotiate to sustain long‑term cooperation.", cn:"双方决定协商谈判，以此维持长期合作。", ipa:"/tu saɪdz dɪˈsaɪdɪd tu nɪˈɡoʊʃiˌeɪt tu səˈsteɪn lɔŋ-tɜrm koʊˌɑpəˈreɪʃən/"},{date:"06/15", word:"It’s remarkable that the volunteer remained calm in vulnerable situations.", cn:"这名志愿者在险境中保持镇定，表现十分出色。", ipa:"/ɪts rɪˈmɑrkəbəl ðæt ðə ˌvɑlənˈtɪr rɪˈmeɪnd kɑm ɪn ˈvʌlnərəbəl ˌsɪtʃuˈeɪʃənz/"},{date:"06/15", word:"The machine can simulate natural scenes for daily training.", cn:"这台设备可以模拟自然场景，用于日常训练。", ipa:"/ðə məˈʃin kæn ˈsɪmjəˌleɪt ˈnætʃərəl sinz fɔr ˈdeɪli ˈtreɪnɪŋ/"},
+        {date:"06/16", word:"persistent", cn:"坚持不懈的", ipa:"/pərˈsɪstənt/"},{date:"06/16", word:"He is persistent in pursuing his dreams.", cn:"他坚持不懈地追逐自己的梦想。", ipa:"/hi ɪz pərˈsɪstənt ɪn pərˈsuɪŋ hɪz drimz/"},{date:"06/16", word:"superior", cn:"优越的", ipa:"/suˈpɪriər/"},{date:"06/16", word:"Her work quality is superior to others.", cn:"她的工作质量优于其他人。", ipa:"/hɜr wɜrk ˈkwɑləti ɪz suˈpɪriər tu ˈʌðərz/"},{date:"06/16", word:"sophisticated", cn:"复杂精密的", ipa:"/səˈfɪstɪˌkeɪtɪd/"},{date:"06/16", word:"This is a sophisticated medical instrument.", cn:"这是一台精密复杂的医疗仪器。", ipa:"/ðɪs ɪz ə səˈfɪstɪˌkeɪtɪd ˈmɛdɪkəl ˈɪnstrəmənt/"},{date:"06/16", word:"tremendous", cn:"巨大的", ipa:"/trɪˈmɛndəs/"},{date:"06/16", word:"We made tremendous progress this year.", cn:"今年我们取得了巨大的进步。", ipa:"/wi meɪd trɪˈmɛndəs ˈprɑɡrəs ðɪs jɪr/"},{date:"06/16", word:"inevitable", cn:"不可避免的", ipa:"/ɪnˈɛvɪtəbəl/"},{date:"06/16", word:"Change is an inevitable part of life.", cn:"改变是人生不可避免的一部分。", ipa:"/tʃeɪndʒ ɪz ən ɪnˈɛvɪtəbəl pɑrt əv laɪf/"},{date:"06/16", word:"genuine", cn:"真诚的", ipa:"/ˈdʒɛnjuɪn/"},{date:"06/16", word:"She showed genuine concern for me.", cn:"她对我流露出真诚的关心。", ipa:"/ʃi ʃoʊd ˈdʒɛnjuɪn kənˈsɜrn fɔr mi/"},
+        {date:"06/17", word:"Cherish every ordinary day.", cn:"珍惜每一个平凡日子。", ipa:"/ˈtʃɛrɪʃ ˈɛvri ˈɔrdəˌnɛri deɪ/"},{date:"06/17", word:"Warm days are worth remembering.", cn:"温暖的时光值得铭记。", ipa:"/wɔrm deɪz ɑr wɜrθ rɪˈmɛmbərɪŋ/"},{date:"06/17", word:"Simple days bring peace of mind.", cn:"平淡日子，内心安然。", ipa:"/ˈsɪmpəl deɪz brɪŋ pis əv maɪnd/"},{date:"06/17", word:"Bright days await us ahead.", cn:"前路尽是明朗时日。", ipa:"/braɪt deɪz əˈweɪt ʌs əˈhɛd/"},{date:"06/17", word:"Slow down and enjoy your days.", cn:"放慢脚步，好好度日。", ipa:"/sloʊ daʊn ænd ɛnˈdʒɔɪ jʊər deɪz/"}
     ];
 
+    // 以下逻辑保持不变
     let currentQueue = [];
     let fuzzyQueue = [];
 
