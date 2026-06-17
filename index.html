@@ -3,19 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>每日打卡系统-智能联动版</title>
+    <title>每日打卡系统-完整修复版</title>
     <style>
         :root { --bg: #f0f4f8; --primary: #4a90e2; }
-        body { font-family: sans-serif; background: var(--bg); display: flex; flex-direction: column; align-items: center; padding: 20px; }
-        .controls { display: flex; gap: 10px; margin-bottom: 20px; }
-        .card { width: 320px; height: 200px; background: white; border-radius: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); padding: 20px; transition: 0.3s; }
+        body { font-family: sans-serif; background: var(--bg); display: flex; flex-direction: column; align-items: center; padding: 20px; min-height: 100vh; }
+        .controls { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; justify-content: center; }
+        .card { width: 320px; height: 200px; background: white; border-radius: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); padding: 20px; transition: 0.3s; text-align: center; }
         .card.flipped { transform: rotateY(180deg); }
+        .word-en { font-size: 1.2rem; font-weight: bold; }
+        .word-cn { font-size: 1.1rem; color: #666; margin-top: 10px; }
     </style>
 </head>
 <body>
 
 <div class="controls">
-    <select id="modeFilter" onchange="updateDateDropdown(); initGame();">
+    <select id="modeFilter" onchange="refreshAll()">
         <option value="all">01 混合模式</option>
         <option value="word">02 单词模式</option>
         <option value="sentence">03 句子模式</option>
@@ -26,43 +28,40 @@
 </div>
 
 <div class="card" id="card" onclick="this.classList.toggle('flipped')">
-    <div id="content">点击开始</div>
+    <div id="content">
+        <div id="en" class="word-en">点击开始</div>
+        <div id="cn" class="word-cn"></div>
+    </div>
 </div>
 
 <script>
+    // 完整数据源
     const wordList = [
-        // 数据集保持不变，代码逻辑已优化
-        {date:"05/25", type:'word', word:"advantage", cn:"优势", ipa:"/ədˈvæntɪdʒ/"},
-        {date:"06/10", type:'sentence', word:"Only by striving...", cn:"唯有不懈奋斗...", ipa:"/.../"},
-        // ... (此处保持你的完整数据)
+        {date:"05/25", type:'word', word:"advantage", cn:"优势", ipa:"/ədˈvæntɪdʒ/"},{date:"05/26", type:'word', word:"admit", cn:"承认", ipa:"/ədˈmɪt/"},{date:"05/27", type:'word', word:"sunshine", cn:"阳光", ipa:"/ˈsʌnˌʃaɪn/"},{date:"05/28", type:'word', word:"challenge", cn:"挑战", ipa:"/ˈtʃæləndʒ/"},{date:"05/29", type:'word', word:"bargain", cn:"讲价", ipa:"/ˈbɑrɡɪn/"},{date:"05/30", type:'word', word:"accelerate", cn:"加速", ipa:"/ækˈsɛləˌreɪt/"},{date:"05/31", type:'sentence', word:"Every effort pays off.", cn:"努力终有回报。", ipa:"/ˈɛvri ˈɛfərt peɪz ɔf/"},{date:"06/01", type:'sentence', word:"Practice makes perfect.", cn:"熟能生巧。", ipa:"/ˈpræktɪs meɪks ˈpɜrfɪkt/"},{date:"06/02", type:'sentence', word:"Life is full of small surprises.", cn:"生活处处有小惊喜。", ipa:"/laɪf ɪz fʊl əv smɔl sərˈpraɪzəz/"},{date:"06/03", type:'sentence', word:"What matters most is sticking to daily reading.", cn:"最重要的是坚持每日阅读。", ipa:"/wʌt ˈmætərz moʊst ɪz ˈstɪkɪŋ tu ˈdeɪli ˈridɪŋ/"},{date:"06/04", type:'sentence', word:"I'm running a little late.", cn:"我稍微晚点到。", ipa:"/aɪm ˈrʌnɪŋ ə ˈlɪtəl leɪt/"},{date:"06/05", type:'sentence', word:"Good manners leave a deep impression on others.", cn:"良好的修养会给人留下深刻印象。", ipa:"/ɡʊd ˈmænərz liv ə dip ɪmˈprɛʃən ɑn ˈʌðərz/"},{date:"06/06", type:'sentence', word:"Self-discipline lays the foundation for dreams.", cn:"自律为梦想打下根基。", ipa:"/ˌsɛlf ˈdɪsəplɪn leɪz ðə faʊnˈdeɪʃən fɔr drimz/"},{date:"06/07", type:'word', word:"plenty", cn:"大量", ipa:"/ˈplɛnti/"},{date:"06/08", type:'sentence', word:"Teamwork plays an important role in college life.", cn:"团队协作在大学生活中十分重要。", ipa:"/ˈtimˌwɜrk pleɪz ən ɪmˈpɔrtənt roʊl ɪn ˈkɑlɪdʒ laɪf/"},{date:"06/09", type:'sentence', word:"Knowledge is power.", cn:"知识就是力量。", ipa:"/ˈnɑlɪdʒ ɪz ˈpaʊər/"},{date:"06/10", type:'sentence', word:"Only by striving constantly can we embrace a promising future.", cn:"唯有不懈奋斗，方能拥抱美好未来。", ipa:"/ˈoʊnli baɪ ˈstraɪvɪŋ ˈkɑnstəntli kæn wi ɛmˈbreɪs ə ˈprɑmɪsɪŋ ˈfjutʃər/"},{date:"06/11", type:'sentence', word:"It’s up to you.", cn:"由你决定。", ipa:"/ɪts ʌp tu ju/"},{date:"06/12", type:'sentence', word:"I’m considering whether to take a gap year before going to college.", cn:"我在考虑上大学前是否要休学一年。", ipa:"/aɪm kənˈsɪdərɪŋ ˈwɛðər tu teɪk ə ɡæp jɪr/"},{date:"06/13", type:'word', word:"persistent", cn:"坚持不懈的", ipa:"/pərˈsɪstənt/"},{date:"06/14", type:'word', word:"dilemma", cn:"两难选择", ipa:"/dɪˈlɛmə/"},{date:"06/15", type:'sentence', word:"Faced with this tough dilemma, he chose to restrain his impulse.", cn:"面对两难困境，他选择克制自身冲动。", ipa:"/feɪst wɪð ðɪs tʌf dɪˈlɛmə/"},{date:"06/16", type:'word', word:"sophisticated", cn:"复杂精密的", ipa:"/səˈfɪstɪˌkeɪtɪd/"},{date:"06/17", type:'sentence', word:"Cherish every ordinary day.", cn:"珍惜每一个平凡日子。", ipa:"/ˈtʃɛrɪʃ ˈɛvri ˈɔrdəˌnɛri deɪ/"}
     ];
 
-    // 1. 核心改进：根据当前模式动态更新日期列表
-    function updateDateDropdown() {
+    function refreshAll() {
         const mode = document.getElementById('modeFilter').value;
         const select = document.getElementById('dateFilter');
-        const currentValue = select.value; // 记住当前选中的日期
+        const currentSelectedDate = select.value;
         
+        // 重新生成日期列表
         select.innerHTML = '<option value="all">-- 请选择日期 --</option>';
-        
-        // 筛选出符合当前模式的日期
-        const filteredDates = [...new Set(wordList
+        const dates = [...new Set(wordList
             .filter(item => mode === 'all' || item.type === mode)
             .map(item => item.date))].sort();
-
-        filteredDates.forEach(d => {
+            
+        dates.forEach(d => {
             const opt = document.createElement('option');
             opt.value = d; opt.innerText = d;
             select.appendChild(opt);
         });
 
-        // 尝试恢复之前的日期选择，如果该模式下存在该日期
-        if (filteredDates.includes(currentValue)) {
-            select.value = currentValue;
-        }
+        // 尝试保留之前选中的日期
+        if (dates.includes(currentSelectedDate)) select.value = currentSelectedDate;
+        initGame();
     }
 
-    // 2. 核心改进：根据当前模式和日期筛选内容
     function initGame() {
         const mode = document.getElementById('modeFilter').value;
         const date = document.getElementById('dateFilter').value;
@@ -73,13 +72,17 @@
             return matchMode && matchDate;
         });
 
-        const displayEl = document.getElementById('content');
-        displayEl.innerText = filtered.length > 0 ? filtered[0].word : "该条件下暂无内容";
+        if (filtered.length > 0) {
+            document.getElementById('en').innerText = filtered[0].word;
+            document.getElementById('cn').innerText = filtered[0].cn;
+        } else {
+            document.getElementById('en').innerText = "无内容";
+            document.getElementById('cn').innerText = "";
+        }
     }
 
-    // 初始化
-    updateDateDropdown();
-    initGame();
+    // 初始化运行
+    refreshAll();
 </script>
 </body>
 </html>
