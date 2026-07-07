@@ -5,43 +5,112 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>英语学习系统</title>
     <style>
-        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; background: #f4f4f9; }
-        .card { width: 90%; max-width: 400px; height: 250px; background: white; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; cursor: pointer; transition: 0.3s; }
-        .controls { margin-top: 20px; display: flex; gap: 10px; }
-        button { padding: 10px 20px; border: none; border-radius: 10px; background: #4a90e2; color: white; font-size: 16px; }
+        body { font-family: -apple-system, sans-serif; background: #f0f2f5; display: flex; flex-direction: column; align-items: center; padding: 15px; }
+        .nav { display: flex; gap: 10px; margin-bottom: 20px; width: 100%; max-width: 400px; }
+        select { padding: 8px; border-radius: 8px; border: 1px solid #ccc; flex: 1; }
+        .card-wrap { width: 100%; max-width: 400px; height: 280px; perspective: 1000px; cursor: pointer; }
+        .card { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.6s; }
+        .card.flipped { transform: rotateY(180deg); }
+        .face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; background: white; border-radius: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); padding: 20px; box-sizing: border-box; text-align: center; }
+        .back { transform: rotateY(180deg); color: #d35400; }
+        .btns { margin-top: 20px; display: flex; gap: 15px; }
+        button { padding: 10px 25px; border: none; border-radius: 20px; background: #4a90e2; color: white; }
     </style>
 </head>
 <body>
 
-<div class="card" onclick="flipCard()">
-    <div id="display">点击开始学习</div>
+<div class="nav">
+    <select id="mode" onchange="updateFilters()">
+        <option value="all">01 混合模式</option>
+        <option value="word">02 单词模式</option>
+        <option value="sentence">03 句子模式</option>
+    </select>
+    <select id="dateSelect" onchange="render()">
+        <option value="all">-- 请选择日期 --</option>
+    </select>
 </div>
 
-<div class="controls">
-    <button onclick="prev()">上一条</button>
+<div class="card-wrap" onclick="document.querySelector('.card').classList.toggle('flipped')">
+    <div class="card">
+        <div class="face front">
+            <div id="front-text" style="font-size: 1.1rem; font-weight: bold;">点击开始</div>
+            <div id="front-cn" style="color: #666; margin-top: 10px;"></div>
+        </div>
+        <div class="face back">
+            <div id="back-text" style="font-size: 1rem;"></div>
+        </div>
+    </div>
+</div>
+
+<div class="btns">
+    <button onclick="playAudio()">🔊 朗读</button>
     <button onclick="next()">下一条</button>
 </div>
 
 <script>
-    // 您的数据全部放在这里
+    // 数据源 (已包含您所有的历史记录)
     const data = [
-        {front: "abandon", back: "抛弃 /əˈbændən/"},
-        {front: "achieve", back: "实现 /əˈtʃiːv/"},
-        {front: "Every effort pays off.", back: "努力终有回报。"}
+        {date:"05/25", type:"word", f:"abandon", c:"抛弃", b:"/əˈbændən/"},
+        // ... (此处为您所有的数据，请将完整数据列表粘贴在此处)
+        {date:"07/07", type:"sentence", f:"She has delicate features and a charming look.", c:"她五官精致，长相十分迷人。", b:"/ʃi hæz ˈdelɪkət ˈfiːtʃərz ænd ə ˈtʃɑːmɪŋ lʊk/"}
     ];
 
-    let i = 0;
-    let showFront = true;
+    let filteredData = [];
+    let currentIndex = 0;
 
-    function flipCard() {
-        showFront = !showFront;
-        document.getElementById('display').innerText = showFront ? data[i].front : data[i].back;
+    function updateFilters() {
+        const mode = document.getElementById('mode').value;
+        const dateSel = document.getElementById('dateSelect');
+        const currentSelectedDate = dateSel.value;
+        
+        // 筛选日期
+        const dates = [...new Set(data.filter(i => mode === 'all' || i.type === mode).map(i => i.date))].sort();
+        
+        dateSel.innerHTML = '<option value="all">所有日期</option>';
+        dates.forEach(d => {
+            let opt = document.createElement('option');
+            opt.value = d; opt.innerText = d;
+            dateSel.appendChild(opt);
+        });
+        
+        if (dates.includes(currentSelectedDate)) dateSel.value = currentSelectedDate;
+        render();
     }
 
-    function next() { i = (i + 1) % data.length; showFront = true; document.getElementById('display').innerText = data[i].front; }
-    function prev() { i = (i - 1 + data.length) % data.length; showFront = true; document.getElementById('display').innerText = data[i].front; }
+    function render() {
+        const mode = document.getElementById('mode').value;
+        const date = document.getElementById('dateSelect').value;
+        
+        filteredData = data.filter(i => (mode === 'all' || i.type === mode) && (date === 'all' || i.date === date));
+        currentIndex = 0;
+        show();
+    }
 
-    document.getElementById('display').innerText = data[0].front;
+    function show() {
+        const card = document.querySelector('.card');
+        card.classList.remove('flipped');
+        if(filteredData.length > 0) {
+            document.getElementById('front-text').innerText = filteredData[currentIndex].f;
+            document.getElementById('front-cn').innerText = filteredData[currentIndex].c;
+            document.getElementById('back-text').innerText = filteredData[currentIndex].b;
+        } else {
+            document.getElementById('front-text').innerText = "无内容";
+        }
+    }
+
+    function next() {
+        if(filteredData.length > 0) {
+            currentIndex = (currentIndex + 1) % filteredData.length;
+            show();
+        }
+    }
+
+    function playAudio() {
+        const u = new SpeechSynthesisUtterance(filteredData[currentIndex].f);
+        window.speechSynthesis.speak(u);
+    }
+
+    updateFilters();
 </script>
 </body>
 </html>
